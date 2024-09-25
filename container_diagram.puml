@@ -47,8 +47,6 @@ Rel(consumer, migrate, "Processa as solicitações de emissão e cancelamento de
 Rel(nf_comm_dispatcher, email, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
 Rel(nf_files_dispatcher, s3, "Envia arquivos para", "async, AWS SDK")
 Rel(migrate, backend_api, "Envia retorno de processamento de NF's", "async, Webhook")
-
-' Rel_Neighbor(web_app, web_app, "Delivers")
 Rel(web_app, backend_api, "Consome", "async, JSON/HTTPS")
 
 Rel(mobile_app, backend_api, "Consome", "async, JSON/HTTPS")
@@ -58,6 +56,5 @@ Rel_Back(database, nf_comm_dispatcher, "Recupera e grava dados em", "Mongoose")
 Rel_Back(database, consumer, "Recupera e grava dados em", "Mongoose")
 
 Rel_Back(cliente, email, "Envia comunicação para")
-'Rel_Back(email, backend_api, "Sends e-mails using", "sync, SMTP")
-'Rel_Neighbor(backend_api, banking_system, "Uses", "async, XML/HTTPS")
+
 @enduml
