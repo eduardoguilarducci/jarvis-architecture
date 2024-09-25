@@ -15,13 +15,13 @@ Person_Ext(cliente, Cliente, "Adminstrativo Financeiro ou Contábil - Recebe Not
 System_Ext(bitrix, "Bitrix","Sistema de autenticação OAuth2 externo")
 System_Ext(migrate, "Invooicy","Sistema de Emissão de Notas Fiscais")
 System_Ext(pjbank, "PJBank","Sistema bancário digital")
+System_Ext(s3,"AWS S3", "Armazena os arquivos binários (PDF) das Notas Fiscais e espelhos emitidos.")
 
 System_Boundary(c1, "Jarvis - Sistema Contábil") {
     Container(web_app, "Aplicação Web", "SPA - Aplicação React", "Entrega o conteúdo estático para gestão contábil incluindo todas as features.")
     Container(mobile_app, "Aplicação Mobile", "React Native", "Entrega uma versão com features limitadas para gestão contábil.")
     ContainerDb(database, "Banco de Dados", "NoSQL Database (MongoDB)", "Armazena informações de clientes, agendamentos de pagamentos e recebimentos, notas fiscais, extrato bancário e conciliação bancária")
     Container(backend_api, "API", "NodeJS / NestJS, K8S", "Provê as funcionalidades de gestão de clientes, agendamentos de pagamentos e recebimentos, notas fiscais, extrato bancário e conciliação bancária via API")
-    Container(s3, "AWS S3", "S3 Bucket", "Armazena os arquivos binários (PDF) das Notas Fiscais e espelhos emitidos.")
     Container(kafka, "Kafka", "Kafka Broker", "Gerencia os eventos de solicitação e emissão de Nota Fiscal")
     Container(consumer, "NF Emmiter", "consumer:NodeJS App", "Processa as solicitações de Emissão ou cancelamento de Notas fiscais da fila")
     Container(nf_comm_dispatcher, "NF Comm. Dispatcher", "consumer:NodeJS App", "Processa o envio das Notas fiscais e notificações de cancelamento.")
