@@ -34,14 +34,14 @@ Container_Boundary(api, "API Application") {
     Component(tasks, "Tasks Component", "NodeJS module", "Provê uma camada de abstração das operações da Invoycee sobre emissão, cancelamento e configurações de Nota Fiscal.")
     ComponentDb(database, "Banco de Dados", "NoSQL Database (MongoDB)", "Armazena informações de clientes, agendamentos de pagamentos e recebimentos, notas fiscais, extrato bancário e conciliação bancária")
     
-    Rel(tasks, kafka, "Uses")
-    Rel(company, database, "Uses")
-    Rel(account, database, "Uses")
-    Rel(contact, database, "Uses")
-    Rel(schedule, database, "Uses")
-    Rel(webhook, database, "Uses")
-    Rel(auth, database, "Uses")
-    Rel(tasks, database, "Uses")
+    Rel(tasks, kafka, "Envia solicitações para o topico indicado em")
+    Rel(company, database, "Recupera e grava dados em")
+    Rel(account, database, "Recupera e grava dados em")
+    Rel(contact, database, "Recupera e grava dados em")
+    Rel(schedule, database, "Recupera e grava dados em")
+    Rel(webhook, database, "Recupera e grava dados em")
+    Rel(auth, database, "Recupera e grava dados em")
+    Rel(tasks, database, "Recupera e grava dados em")
     
 
 }
