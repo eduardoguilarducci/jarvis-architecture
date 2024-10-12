@@ -75,8 +75,8 @@ Rel_Back(kafka, consumer, "Processa as solicitações de emissão e cancelamento
 Rel_Back(kafka, nf_comm_dispatcher, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
 Rel_Back(kafka, nf_files_dispatcher, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
 Rel(consumer, migrate, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
-Rel(migrate, webhook, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
-Rel(pjbank, webhook, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel(migrate, webhook, "Envia o retorno do processamento de Cancelamento e Emissão de NF para", "async, JSON/HTTPS")
+Rel(pjbank, webhook, "Quando configurado, envia movimentações e transações bancárias de Cartões de Crédito e Conta-Corrente para", "async, JSON/HTTPS")
 
 
 Rel_Back(database, nf_files_dispatcher, "Recupera e grava dados em", "Mongoose")
