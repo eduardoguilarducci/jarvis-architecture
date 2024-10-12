@@ -1,0 +1,88 @@
+@startuml Jarvis - Eduardo Guilarducci, XP Educação - Projeto de Arquitetura de Software
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Container.puml
+
+ LAYOUT_TOP_DOWN()
+' LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Container para o sistema Jarvis - Eduardo Guilarducci, XP Educação - Projeto de Arquitetura de Software
+
+Person(contador, Contador, "Contador ou Analista Contábil - Efetua agendamentos de contas a pagar e receber, emissão de Notas Fiscais e Conciliação Bancária")
+
+Container(web_app, "Aplicação Web", "SPA - Aplicação React", "Entrega o conteúdo estático para gestão contábil incluindo todas as features.")
+Container(mobile_app, "Aplicação Mobile", "React Native", "Entrega uma versão com features limitadas para gestão contábil.")
+Container(kafka, "Kafka", "Kafka Broker", "Gerencia os eventos de solicitação e emissão de Nota Fiscal")
+Container(consumer, "NF Emmiter", "consumer:NodeJS App", "Processa as solicitações de Emissão ou cancelamento de Notas fiscais da fila")
+Container(nf_comm_dispatcher, "NF Comm. Dispatcher", "consumer:NodeJS App", "Processa o envio das Notas fiscais e notificações de cancelamento.")
+Container(nf_files_dispatcher, "NF Files Dispatcher", "consumer:NodeJS App", "Processa os arquivos originados de Emissão ou cancelamento de notas fiscais.")
+
+System_Ext(bitrix, "Bitrix","Sistema de autenticação OAuth2 externo")
+System_Ext(migrate, "Invooicy","Sistema de Emissão de Notas Fiscais")
+System_Ext(pjbank, "PJBank","Sistema bancário digital")
+
+
+Container_Boundary(api, "API Application") {
+    Component(auth, "Auth Controller", "NestJS Restful Controller", "Controla os recursos e operações de autenticação e autorização (RBAC).")
+    Component(company, "Company Controller", "NestJS Restful Controller", "Controla os recursos para criação de empresas, e configurações para Emissão de NF.")
+    Component(account, "Account Controller", "NestJS Restful Controller", "Controla as operações de Contas-Correntes de todas as Empresas.")
+    Component(contact, "Contact Controller", "NestJS Restful Controller", "Controla os recursos para gestão de Fornecedores e Clientes das Empresas.")
+    Component(schedule, "Schedule Controller", "NestJS Restful Controller", "Controla os recursos de agendamento de pagamentos, recebimentos e solicitações de operações para Notas Fiscais (emissão e cancelamento).")    
+    Component(webhook, "Webhook Controller", "NestJS Restful Controller", "Controla os as operações do WebHook Invoycee e PJBank.")    
+    Component(tasks, "Tasks Component", "NodeJS module", "Provê uma camada de abstração das operações da Invoycee sobre emissão, cancelamento e configurações de Nota Fiscal.")
+    ComponentDb(database, "Banco de Dados", "NoSQL Database (MongoDB)", "Armazena informações de clientes, agendamentos de pagamentos e recebimentos, notas fiscais, extrato bancário e conciliação bancária")
+    
+    Rel(tasks, kafka, "Uses")
+    Rel(company, database, "Uses")
+    Rel(account, database, "Uses")
+    Rel(contact, database, "Uses")
+    Rel(schedule, database, "Uses")
+    Rel(webhook, database, "Uses")
+    Rel(auth, database, "Uses")
+    Rel(tasks, database, "Uses")
+    
+
+}
+
+
+Rel(web_app, auth, "Uses", "JSON/HTTPS")
+Rel(web_app, company, "Uses", "JSON/HTTPS")
+Rel(web_app, account, "Uses", "JSON/HTTPS")
+Rel(web_app, contact, "Uses", "JSON/HTTPS")
+Rel(web_app, schedule, "Uses", "JSON/HTTPS")
+
+
+
+
+Rel(mobile_app, auth, "Uses", "JSON/HTTPS")
+Rel(mobile_app, company, "Uses", "JSON/HTTPS")
+Rel(mobile_app, account, "Uses", "JSON/HTTPS")
+Rel(mobile_app, contact, "Uses", "JSON/HTTPS")
+Rel(mobile_app, schedule, "Uses", "JSON/HTTPS")
+
+
+
+
+
+Rel(auth, bitrix, "Autentica / Autoriza via ", "async, OAuth2")
+
+
+Rel(contador, web_app, "Usa", "HTTPS")
+Rel(contador, mobile_app, "Usa", "HTTPS")
+Rel_Back(kafka, consumer, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel_Back(kafka, nf_comm_dispatcher, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel_Back(kafka, nf_files_dispatcher, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel(consumer, migrate, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel(migrate, webhook, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel(pjbank, webhook, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+
+
+Rel_Back(database, nf_files_dispatcher, "Recupera e grava dados em", "Mongoose")
+Rel_Back(database, nf_comm_dispatcher, "Recupera e grava dados em", "Mongoose")
+Rel_Back(database, consumer, "Recupera e grava dados em", "Mongoose")
+
+
+
+@enduml

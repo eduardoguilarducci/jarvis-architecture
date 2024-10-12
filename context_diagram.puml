@@ -17,17 +17,10 @@ Person_Ext(cliente, Cliente, "Adminstrativo Financeiro ou Contábil - Recebe Not
 System_Ext(bitrix, "Bitrix","Sistema de autenticação OAuth2 externo")
 System_Ext(migrate, "Invooicy","Sistema de Emissão de Notas Fiscais")
 System_Ext(pjbank, "PJBank","Sistema bancário digital")
-
-System(c1, "System","Jarvis - Sistema Contábil para efetuar agendamentos de contas a pagar e receber, emissão de Notas Fiscais e Conciliação Bancária.") 
-
-
 System_Ext(email, "E-Mail", "Sistema interno de E-mail(GMail)")
 System_Ext(s3,"AWS S3", "Armazena os arquivos binários (PDF) das Notas Fiscais e espelhos emitidos.")
 
-
-
-' Rel(web_app, bitrix, "Autentica / Autoriza via ", "async, OAuth2")
-' Rel(mobile_app, bitrix, "Autentica / Autoriza via ", "async, OAuth2")
+System(c1, "System","Jarvis - Sistema Contábil para efetuar agendamentos de contas a pagar e receber, emissão de Notas Fiscais e Conciliação Bancária.") 
 
 Rel(contador, c1, "Efetua agendamentos de contas a pagar e receber, emissão de Notas Fiscais e Conciliação Bancária", "web e mobile usando")
 Rel(c1, bitrix, "Autentica e autoriza em", "HTTPS")
