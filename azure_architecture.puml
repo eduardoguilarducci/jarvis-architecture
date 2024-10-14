@@ -1,0 +1,66 @@
+@startuml Jarvis - Eduardo Guilarducci, XP Educação - Projeto de Arquitetura de Software
+
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define AzurePuml https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/master/dist
+
+!includeurl AzurePuml/AzureCommon.puml
+!includeurl AzurePuml/AzureC4Integration.puml
+!includeurl AzurePuml/Databases/AzureRedisCache.puml
+!includeurl AzurePuml/Databases/AzureCosmosDb.puml
+!includeurl AzurePuml/Databases/AzureSqlDatabase.puml
+!includeurl AzurePuml/Web/AzureWebApp.puml
+!includeurl AzurePuml/Web/AzureCDN.puml
+!includeurl AzurePuml/Storage/AzureBlobStorage.puml
+!includeurl AzurePuml/Storage/AzureQueueStorage.puml
+!includeurl AzurePuml/Networking/AzureLoadBalancer.puml
+!includeurl AzurePuml/Containers/AzureKubernetesService.puml
+!includeurl AzurePuml/Analytics/AzureEventHub.puml
+!includeurl AzurePuml/Compute/AzureFunction.puml
+
+
+
+
+
+LAYOUT_WITH_LEGEND()
+title Diagrama de Arquitetura Referência - Microsoft Azure para o sistema Jarvis - Eduardo Guilarducci, XP Educação - Projeto de Arquitetura de Software
+
+Person(contador, Contador, "Contador ou Analista Contábil - Efetua agendamentos de contas a pagar e receber, emissão de Notas Fiscais e Conciliação Bancária")
+
+System_Boundary(c1, "Jarvis - Sistema Contábil") {
+
+    AzureKubernetesService(k8s, "MarvelMoney Cluster", "Kubernetes Managed Cluster", "Provém a orquestração para implantação, gerenciamento e dimensionamento de contêineres.")
+    AzureBlobStorage(spa, "Aplicação Web", "SPA - Aplicação React", "Entrega o conteúdo estático para gestão contábil incluindo todas as features.")
+    AzureCosmosDb(cosmosDb, "Banco de Dados", "NoSQL Database (MongoDB)", "Armazena informações de clientes, agendamentos de pagamentos e recebimentos, notas fiscais, extrato bancário e conciliação bancária")
+    AzureWebApp(api,"API", "NodeJS / NestJS, K8S", "Provê as funcionalidades de gestão de clientes, agendamentos de pagamentos e recebimentos, notas fiscais, extrato bancário e conciliação bancária via API")
+    AzureEventHub(kafka, "Kafka", "Kafka Broker", "Gerencia os eventos de solicitação e emissão de Nota Fiscal")
+    AzureFunction(consumer, "NF Emmiter", "consumer:NodeJS App", "Processa as solicitações de Emissão ou cancelamento de Notas fiscais da fila")
+    AzureFunction(nf_comm_dispatcher, "NF Comm. Dispatcher", "consumer:NodeJS App", "Processa o envio das Notas fiscais e notificações de cancelamento.")
+    AzureFunction(nf_files_dispatcher, "NF Files Dispatcher", "consumer:NodeJS App", "Processa os arquivos originados de Emissão ou cancelamento de notas fiscais.")
+
+}
+
+
+
+
+AzureCDN(cdn, "CDN", "Entrega e distribuição de conteúdo estático, com cache para o SPA")
+AzureLoadBalancer(lb, 'Load Balancer','provice balance')
+
+Rel(contador, lb, "Usa", "HTTPS")
+Rel(lb, k8s, "Usa", "HTTPS")
+Rel(lb, cdn, "Usa", "HTTPS")
+Rel_Neighbor(k8s, api, "Usa", "HTTPS")
+Rel(api, cosmosDb, "Recupera e grava dados em", "Mongoose")
+Rel(api, kafka, "Envia resultados de NF's emitidas ou canceladas", "kafka topic: nf_emmited / nf_canceled")
+Rel(spa, api, "Reads from and writes to", "SQL API")
+Rel(cdn,spa, "Reads from and writes to", "SQL API")
+
+Rel_Back(kafka, consumer, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel_Back(kafka, nf_comm_dispatcher, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+Rel_Back(kafka, nf_files_dispatcher, "Processa as solicitações de emissão e cancelamento de notas via", "async, JSON/HTTPS")
+
+
+
+Lay_D(k8s, api)
+
+@enduml
